@@ -1,5 +1,6 @@
 package com.smdevs.musicplayer
 
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.smdevs.musicplayer.databinding.ActivityMusicBinding
@@ -17,8 +18,17 @@ class MusicActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val music = getMusicBundle()
+        layoutInit(music)
 
-        binding.musicTitle.text = music.title
+    }
+
+    private fun layoutInit(music: MusicObject) {
+        binding.playerTitle.text = music.title
+        binding.playerArtist.text = music.artist
+
+        binding.playerImage.setImageURI(
+            Uri.parse(music.albumArt)
+        )
     }
 
     private fun getMusicBundle():MusicObject{
