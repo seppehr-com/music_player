@@ -11,8 +11,8 @@ import com.smdevs.musicplayer.R
 import androidx.recyclerview.widget.RecyclerView
 import com.smdevs.musicplayer.model.MusicObject
 
-class MusicListAdapter(val musics : List<MusicObject>,val itemClickHandler:(music: MusicObject)->Unit) : RecyclerView.Adapter<MusicListAdapter.ViewHolder>() {
-    inner class ViewHolder(val view : View) : RecyclerView.ViewHolder(view){
+class MusicListAdapter(private val musics : ArrayList<MusicObject>, val itemClickHandler:(musics: ArrayList<MusicObject>, position:Int)->Unit) : RecyclerView.Adapter<MusicListAdapter.ViewHolder>() {
+    inner class ViewHolder(private val view : View) : RecyclerView.ViewHolder(view){
         val itemImage : ImageView = view.findViewById(R.id.itemImage)
         val itemTitle : TextView = view.findViewById(R.id.itemTitle)
         val itemArtist : TextView = view.findViewById(R.id.itemArtist)
@@ -35,7 +35,7 @@ class MusicListAdapter(val musics : List<MusicObject>,val itemClickHandler:(musi
         )
 
         holder.itemWrapper.setOnClickListener {
-            itemClickHandler(musics[position])
+            itemClickHandler(musics,position)
         }
     }
 

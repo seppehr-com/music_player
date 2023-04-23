@@ -5,7 +5,6 @@ import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -34,9 +33,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun itemClickHandler(music : MusicObject){
+    private fun itemClickHandler(musics : ArrayList<MusicObject>,position : Int){
         val bundle = Bundle()
-        bundle.putSerializable("music",music)
+        bundle.putInt("position",position)
+        bundle.putParcelableArrayList("musics",musics)
 
         val intent = Intent(this,MusicActivity::class.java)
         intent.putExtras(bundle)
@@ -48,10 +48,10 @@ class MainActivity : AppCompatActivity() {
         val musics = musicListInit()
 
         binding.recyclerViewMusics.layoutManager = LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
-        binding.recyclerViewMusics.adapter = MusicListAdapter(musics,{music:MusicObject->itemClickHandler(music)})
+        binding.recyclerViewMusics.adapter = MusicListAdapter(musics,{musics:ArrayList<MusicObject>,position:Int->itemClickHandler(musics,position)})
     }
 
-    private fun musicListInit() : List<MusicObject> {
+    private fun musicListInit() : ArrayList<MusicObject> {
         val proj = arrayOf(
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
@@ -66,12 +66,12 @@ class MainActivity : AppCompatActivity() {
 
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
-        val albumArtUri = Uri.parse("content://media/external/audio/albumart");
+        val albumArtUri = Uri.parse("content://media/internal/audio/albumart");
 
         val musicList = ArrayList<MusicObject>()
 
         val audioCursor: Cursor? = contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            MediaStore.Audio.Media.INTERNAL_CONTENT_URI,
             proj,
             selection,
             null,

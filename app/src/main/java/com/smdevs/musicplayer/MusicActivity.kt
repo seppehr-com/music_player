@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Parcelable
 import android.util.Log
 import android.widget.SeekBar
 import android.widget.Toast
@@ -22,6 +23,10 @@ class MusicActivity : AppCompatActivity() {
     private lateinit var runnable: Runnable
     private var handler = Handler()
 
+    private var position : Int = 0
+    private lateinit var musicArray : ArrayList<MusicObject>
+    private lateinit var currentMusic:MusicObject
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMusicBinding.inflate(layoutInflater)
@@ -31,16 +36,16 @@ class MusicActivity : AppCompatActivity() {
         supportActionBar?.title = "Music Detail"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val music = getMusicBundle()
-        layoutInit(music)
-        playerInit(music)
+        setCurrentMusic()
+
+        layoutInit()
+        playerInit()
     }
 
-    private fun playerInit(music: MusicObject){
-        Log.i("infoLog",Uri.parse(music.data).toString())
+    private fun playerInit(){
             try {
                 mediaPlayer = MediaPlayer()
-                mediaPlayer.setDataSource(applicationContext,Uri.parse(music.data))
+                mediaPlayer.setDataSource(applicationContext,Uri.parse(currentMusic.data))
                 mediaPlayer.prepare()
 
                 binding.playerPlayPause.setOnClickListener {
@@ -53,7 +58,20 @@ class MusicActivity : AppCompatActivity() {
                         binding.playerPlayPause.setImageResource(R.drawable.ic_baseline_pause_24)
                     }
                 }
+
+                binding.playerNext.setOnClickListener {
+                    skipCurrentHandler("next")
+                }
+                binding.playerPrevious.setOnClickListener {
+                    skipCurrentHandler("previous")
+                }
+
                 seekBarInit()
+
+                mediaPlayer.setOnCompletionListener {
+                    binding.playerPlayPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                    binding.playerSeekBar.progress=0
+                }
             }catch (e:Exception){
                 Toast.makeText(this,"We couldn't make it!",Toast.LENGTH_LONG).show()
             }
@@ -90,18 +108,50 @@ class MusicActivity : AppCompatActivity() {
         }
     }
 
-    private fun layoutInit(music: MusicObject) {
-        binding.playerTitle.text = music.title
-        binding.playerArtist.text = music.artist
+    private fun layoutInit() {
+        binding.playerTitle.text = currentMusic.title
+        binding.playerArtist.text = currentMusic.artist
 
         binding.playerImage.setImageURI(
-            Uri.parse(music.albumArt)
+            Uri.parse(currentMusic.albumArt)
         )
     }
 
-    private fun getMusicBundle():MusicObject{
-        return intent.getSerializableExtra("music")
-            as MusicObject
+    private fun musicsArrayInit() {
+        val bundle = intent.extras
+        musicArray = bundle?.getParcelableArrayList("musics")!!
+    }
+
+    private fun positionInit(){
+        val bundle = intent.extras
+        position =  bundle?.getInt("position").toString().toInt()
+    }
+
+    private fun skipPositionHandler(action: String){
+        if(action == "next" && position < musicArray.size-1)
+            position++
+        else if(action == "previous" && position>0)
+            position--
+        else{
+            Toast.makeText(applicationContext,"You're might in the first or last audio!",Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun skipCurrentHandler(action : String = "next"){
+        skipPositionHandler(action)
+        currentMusic = musicArray[position]
+
+        //Update layout
+        layoutInit()
+        playerInit()
+    }
+
+
+    private fun setCurrentMusic(){
+        positionInit()
+        musicsArrayInit()
+
+        currentMusic = musicArray[position]
     }
 
     override fun onDestroy() {

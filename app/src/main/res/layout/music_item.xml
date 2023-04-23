@@ -22,7 +22,6 @@
             android:id="@+id/itemImage"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/album_image_item"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background" />
         <LinearLayout
