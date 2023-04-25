@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         val sortOrder = MediaStore.Audio.Media.TITLE + " ASC"
 
-        val albumArtUri = Uri.parse("content://media/internal/audio/albumart");
+        val albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
         val musicList = ArrayList<MusicObject>()
 
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         if(ContextCompat.checkSelfPermission(this@MainActivity,Manifest.permission.READ_EXTERNAL_STORAGE)
             == PackageManager.PERMISSION_GRANTED){
             //Permission has already generated!
-            Toast.makeText(this@MainActivity,"Permission has already generated!",Toast.LENGTH_LONG).show()
+//            Toast.makeText(this@MainActivity,"Permission has already generated!",Toast.LENGTH_LONG).show()
             return true
         }
         else if(ContextCompat.checkSelfPermission(this@MainActivity,Manifest.permission.READ_EXTERNAL_STORAGE)

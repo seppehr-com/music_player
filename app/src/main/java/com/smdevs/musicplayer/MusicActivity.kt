@@ -80,6 +80,7 @@ class MusicActivity : AppCompatActivity() {
     private fun seekBarInit() {
         binding.playerSeekBar.progress = 0
         binding.playerSeekBar.max = mediaPlayer.duration
+        binding.playerMaxTime.text= timeConvertor(mediaPlayer.duration)
 
         binding.playerSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(
@@ -100,6 +101,7 @@ class MusicActivity : AppCompatActivity() {
         try {
             runnable = Runnable {
                 binding.playerSeekBar.progress=mediaPlayer.currentPosition
+                binding.playerCurrentTime.text = timeConvertor(mediaPlayer.currentPosition)
                 handler.postDelayed(runnable,1000)
             }
             handler.postDelayed(runnable,1000)
@@ -152,6 +154,20 @@ class MusicActivity : AppCompatActivity() {
         musicsArrayInit()
 
         currentMusic = musicArray[position]
+    }
+
+    private fun timeConvertor(second : Int):String{
+        var r:Int
+        val m:Int = (second / 60).toInt()
+        val s:Int = second % 60
+
+        return "${digitMaker(m)}:${digitMaker(s)}"
+    }
+
+    private fun digitMaker(digit:Int):String{
+        if(digit/10 < 2)
+            return "0$digit"
+        return "$digit"
     }
 
     override fun onDestroy() {
